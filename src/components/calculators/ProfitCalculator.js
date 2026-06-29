@@ -119,7 +119,10 @@ export function ProfitCalculator() {
         <div class="result-sub">Gross: ${formatMoney(grossAccount, account.currency)} · Moved ${pipsMoved.toFixed(1)} ${instrument.unitLabel}s</div>
         <div class="result-sub">${account.accountType === "premier" ? "Commission" : "Spread cost"}: ${formatMoney(tradingCost.totalCost, account.currency)} (${account.accountType === "premier" ? "Premier" : "Standard"} account) ${fees > 0 ? `· Manual fees: ${formatMoney(fees, account.currency)}` : ""}</div>
         ${nights > 0 &&
-        html`<div class="result-sub ${swap.totalAccount >= 0 ? "positive" : "negative"}">Swap (${nights} night${nights === 1 ? "" : "s"}): ${swap.totalAccount >= 0 ? "+" : ""}${formatMoney(swap.totalAccount, account.currency)}</div>`}
+        html`
+          <div class="result-sub ${swap.totalAccount >= 0 ? "positive" : "negative"}">Swap (${nights} night${nights === 1 ? "" : "s"}): ${swap.totalAccount >= 0 ? "+" : ""}${formatMoney(swap.totalAccount, account.currency)}</div>
+          ${swap.totalAccount > 0 && html`<div class="result-sub swap-note">A credit here reflects the interest-rate gap between the two currencies for this direction — it isn't free money and can flip if rates change.</div>`}
+        `}
         ${returnOnMarginPct != null &&
         html`<div class="result-sub return-on-margin ${returnOnMarginPct >= 0 ? "positive" : "negative"}">Return on margin used: ${returnOnMarginPct >= 0 ? "+" : ""}${returnOnMarginPct.toFixed(1)}% (1:${account.leverage} leverage)</div>`}
       </div>
@@ -137,7 +140,14 @@ export function ProfitCalculator() {
         swapTotal=${swap.totalAccount}
         marginCallPrice=${marginCall.price}
         marginCallDistancePct=${marginCall.distancePct}
-        onReset=${() => { setOpenPrice(livePrice); setClosePrice(livePrice); }}
+        onReset=${() => {
+          setOpenPrice(livePrice);
+          setClosePrice(livePrice);
+          setDirection("buy");
+          setLots(1);
+          setFees(0);
+          setNights(0);
+        }}
       />
       <${RiskGauge} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} level=${risk.level} />
       <${AccountTypeCompare} lots=${lots} pipValuePerUnitAccount=${pipValuePerUnitAccount} accountCcy=${account.currency} currentType=${account.accountType} />

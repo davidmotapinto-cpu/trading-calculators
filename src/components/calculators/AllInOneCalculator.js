@@ -138,6 +138,7 @@ export function AllInOneCalculator() {
           </div>
         `}
       </div>
+      ${swap.totalAccount > 0 && html`<div class="swap-note">A swap credit reflects the interest-rate gap between the two currencies for this direction — it isn't free money and can flip if rates change.</div>`}
 
       <${ProfitChart}
         instrument=${instrument}
@@ -153,7 +154,13 @@ export function AllInOneCalculator() {
         swapTotal=${swap.totalAccount}
         marginCallPrice=${marginCall.price}
         marginCallDistancePct=${marginCall.distancePct}
-        onReset=${() => { setOpenPrice(livePrice); setClosePrice(livePrice); }}
+        onReset=${() => {
+          setOpenPrice(livePrice);
+          setClosePrice(livePrice);
+          setDirection("buy");
+          setLots(1);
+          setNights(1);
+        }}
       />
       <${RiskGauge} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} level=${risk.level} />
       <${AccountTypeCompare} lots=${lots} pipValuePerUnitAccount=${pip.perUnitAccount} accountCcy=${account.currency} currentType=${account.accountType} />
