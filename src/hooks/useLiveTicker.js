@@ -1,12 +1,13 @@
 // Live pricing. A single interval drives a shared price store and notifies
 // subscribers. Where a free, no-key, browser-callable real data source
-// exists (crypto via Binance, forex via the ECB's daily rates), the random
-// walk is periodically re-anchored to that real value instead of drifting
-// indefinitely from a static mock baseline — see src/lib/liveDataFeeds.js.
-// Metals/indices/commodities have no such source and stay simulated.
+// exists (crypto via Binance, forex via the ECB's daily rates, gold via a
+// tokenized-gold proxy on Binance), the random walk is periodically
+// re-anchored to that real value instead of drifting indefinitely from a
+// static mock baseline — see src/lib/liveDataFeeds.js. Silver/indices
+// /commodities have no such source and stay simulated.
 import { useEffect, useState } from "react";
 import { INSTRUMENTS } from "../lib/instruments.js";
-import { fetchCryptoAnchors, fetchForexAnchors } from "../lib/liveDataFeeds.js";
+import { fetchCryptoAnchors, fetchForexAnchors, fetchMetalProxyAnchors } from "../lib/liveDataFeeds.js";
 
 const listeners = new Set();
 const livePrices = {};
@@ -35,6 +36,7 @@ function applyAnchors(anchors) {
 let timer = null;
 let cryptoTimer = null;
 let forexTimer = null;
+let metalTimer = null;
 
 function ensureTimer() {
   if (!timer) timer = setInterval(tick, 1800);
@@ -47,6 +49,11 @@ function ensureTimer() {
   if (!forexTimer) {
     fetchForexAnchors().then(applyAnchors);
     forexTimer = setInterval(() => fetchForexAnchors().then(applyAnchors), 5 * 60 * 1000);
+  }
+
+  if (!metalTimer) {
+    fetchMetalProxyAnchors().then(applyAnchors);
+    metalTimer = setInterval(() => fetchMetalProxyAnchors().then(applyAnchors), 10000);
   }
 }
 

@@ -6,9 +6,13 @@
 // no key required — polled every few seconds.
 // Forex  -> the European Central Bank's daily reference rates via the
 // Frankfurter API. Real, but refreshed once a day, not tick-by-tick.
-// Metals/Indices/Commodities -> no free, no-key, browser-callable source
-// was found for these; they remain simulated from the static baseline in
-// instruments.js (clearly labeled as such in the UI).
+// Gold   -> also via Binance, using PAXGUSDT (PAX Gold, a token backed
+// 1:1 by physical gold). It's a proxy, not literal interbank XAU/USD spot —
+// usually within a small margin of spot but can drift slightly, so it's
+// labeled distinctly in the UI rather than claimed as exact spot.
+// Silver/Indices/Commodities -> no free, no-key, browser-callable source
+// was found (checked Stooq's free CSV endpoint specifically; it 404s for
+// every symbol format tried). These remain simulated, clearly labeled.
 const BINANCE_SYMBOLS = {
   BTCUSD: "BTCUSDT",
   ETHUSD: "ETHUSDT",
@@ -16,23 +20,32 @@ const BINANCE_SYMBOLS = {
   SOLUSD: "SOLUSDT",
 };
 
+const BINANCE_PROXY_SYMBOLS = {
+  XAUUSD: "PAXGUSDT",
+};
+
 const FOREX_CCY = ["EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD"];
 
-// symbol -> "live" (crypto, seconds-fresh) | "daily" (forex, ECB) | absent (simulated)
+// symbol -> "live" (crypto, seconds-fresh) | "proxy" (tokenized-asset proxy) | "daily" (forex, ECB) | absent (simulated)
 export const DATA_SOURCE = {};
+
+async function fetchBinancePrice(binanceSymbol) {
+  try {
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${binanceSymbol}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const price = parseFloat(data.price);
+    return Number.isFinite(price) ? price : null;
+  } catch {
+    return null; // offline/blocked — caller just keeps the simulated value
+  }
+}
 
 export async function fetchCryptoAnchors() {
   const results = await Promise.all(
     Object.entries(BINANCE_SYMBOLS).map(async ([ourSymbol, binanceSymbol]) => {
-      try {
-        const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${binanceSymbol}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        const price = parseFloat(data.price);
-        return Number.isFinite(price) ? [ourSymbol, price] : null;
-      } catch {
-        return null; // offline/blocked — caller just keeps the simulated value
-      }
+      const price = await fetchBinancePrice(binanceSymbol);
+      return price != null ? [ourSymbol, price] : null;
     })
   );
   const anchors = {};
@@ -40,6 +53,23 @@ export async function fetchCryptoAnchors() {
     if (entry) {
       anchors[entry[0]] = entry[1];
       DATA_SOURCE[entry[0]] = "live";
+    }
+  }
+  return anchors;
+}
+
+export async function fetchMetalProxyAnchors() {
+  const results = await Promise.all(
+    Object.entries(BINANCE_PROXY_SYMBOLS).map(async ([ourSymbol, binanceSymbol]) => {
+      const price = await fetchBinancePrice(binanceSymbol);
+      return price != null ? [ourSymbol, price] : null;
+    })
+  );
+  const anchors = {};
+  for (const entry of results) {
+    if (entry) {
+      anchors[entry[0]] = entry[1];
+      DATA_SOURCE[entry[0]] = "proxy";
     }
   }
   return anchors;

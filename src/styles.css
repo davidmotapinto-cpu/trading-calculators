@@ -544,6 +544,7 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
 }
 
 .sim-badge.source-live { color: var(--green); border-color: rgba(22, 163, 74, 0.4); background: rgba(22, 163, 74, 0.08); }
+.sim-badge.source-proxy { color: var(--blue); border-color: rgba(47, 111, 237, 0.4); background: rgba(47, 111, 237, 0.08); }
 .sim-badge.source-daily { color: var(--teal-dark); border-color: rgba(0, 179, 164, 0.4); background: rgba(0, 179, 164, 0.08); }
 
 @keyframes pulse {
