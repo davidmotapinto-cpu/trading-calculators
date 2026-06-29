@@ -159,7 +159,7 @@ export function ProfitCalculator() {
         formula="P/L = (Close Price − Open Price) × Contract Size × Lots × Direction, converted to account currency"
         example=${`(${closePrice != null ? closePrice.toFixed(decimals) : "—"} − ${openPrice != null ? openPrice.toFixed(decimals) : "—"}) × ${instrument.contractSize.toLocaleString()} × ${lots.toFixed(2)} = ${formatMoney(grossAccount, account.currency)} gross → ${formatMoney(netAccount, account.currency)} net`}
       />
-      <${TradeCTA} label="Go to Trading Platform" />
+      <${TradeCTA} label="Open an Account" />
       <${SaveSimulationButton}
         calculator="Profit"
         instrument=${instrument.label}

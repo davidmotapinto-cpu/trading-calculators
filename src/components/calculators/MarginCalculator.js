@@ -64,7 +64,7 @@ export function MarginCalculator() {
         formula="Required Margin = (Lots × Contract Size × Price) / Leverage"
         example=${`(${lots.toFixed(2)} × ${instrument.contractSize.toLocaleString()} × ${priced.price.toFixed(decimals)}) / ${leverage} = ${formatMoney(notionalQuote / leverage, instrument.quote)} → ${formatMoney(marginAccount, account.currency)}`}
       />
-      <${TradeCTA} label="Go to Trading Platform" />
+      <${TradeCTA} label="Open an Account" />
       <${SaveSimulationButton}
         calculator="Margin"
         instrument=${instrument.label}

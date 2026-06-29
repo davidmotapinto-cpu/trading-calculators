@@ -831,11 +831,10 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
 
 .formula-expression.formula-applied { background: var(--bg); color: var(--navy); border: 1px solid var(--border); font-weight: 600; }
 
-/* Trade CTA — disabled placeholder until wired to a real platform deep-link */
-.trade-cta-wrap { margin-top: 18px; }
-
+/* Trade CTA — links out to Equiti's real account-opening page */
 .trade-cta {
   width: 100%;
+  margin-top: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -843,23 +842,19 @@ input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.15); }
   padding: 13px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  background: var(--brand-gradient);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   font-family: inherit;
-  cursor: not-allowed;
-  opacity: 0.55;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.trade-cta-arrow { display: inline-block; }
-
-.trade-cta-caption {
-  margin-top: 7px;
-  font-size: 11.5px;
-  color: var(--muted);
-  text-align: center;
-}
+.trade-cta:hover { opacity: 0.92; transform: translateY(-1px); }
+.trade-cta-arrow { display: inline-block; transition: transform 0.15s ease; }
+.trade-cta:hover .trade-cta-arrow { transform: translateX(3px); }
 
 /* AI insight */
 .ai-insight {
