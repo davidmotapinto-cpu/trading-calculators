@@ -13,6 +13,8 @@
 // Silver/Indices/Commodities -> no free, no-key, browser-callable source
 // was found (checked Stooq's free CSV endpoint specifically; it 404s for
 // every symbol format tried). These remain simulated, clearly labeled.
+import { refreshRatesFromECB } from "./fxRates.js";
+
 const BINANCE_SYMBOLS = {
   BTCUSD: "BTCUSDT",
   ETHUSD: "ETHUSDT",
@@ -23,8 +25,6 @@ const BINANCE_SYMBOLS = {
 const BINANCE_PROXY_SYMBOLS = {
   XAUUSD: "PAXGUSDT",
 };
-
-const FOREX_CCY = ["EUR", "GBP", "JPY", "CHF", "CAD", "AUD", "NZD"];
 
 // symbol -> "live" (crypto, seconds-fresh) | "proxy" (tokenized-asset proxy) | "daily" (forex, ECB) | absent (simulated)
 export const DATA_SOURCE = {};
@@ -76,31 +76,29 @@ export async function fetchMetalProxyAnchors() {
 }
 
 export async function fetchForexAnchors() {
-  try {
-    const res = await fetch(`https://api.frankfurter.app/latest?from=USD&to=${FOREX_CCY.join(",")}`);
-    if (!res.ok) return {};
-    const data = await res.json();
-    const r = data.rates;
-    if (!r) return {};
-    const anchors = {
-      EURUSD: 1 / r.EUR,
-      GBPUSD: 1 / r.GBP,
-      USDJPY: r.JPY,
-      USDCHF: r.CHF,
-      USDCAD: r.CAD,
-      AUDUSD: 1 / r.AUD,
-      NZDUSD: 1 / r.NZD,
-      EURGBP: r.GBP / r.EUR,
-      EURJPY: r.JPY / r.EUR,
-      GBPJPY: r.JPY / r.GBP,
-    };
-    Object.keys(anchors).forEach((sym) => {
-      DATA_SOURCE[sym] = "daily";
-    });
-    return anchors;
-  } catch {
-    return {};
-  }
+  // Reuses fxRates.js's fetch (and updates the SAME RATES table the
+  // Currency Calculator and every cross-currency conversion read) instead
+  // of hitting Frankfurter a second time with its own separate, never-
+  // synced copy — that duplication was the bug that left currency
+  // conversion silently using a months-old static table.
+  const r = await refreshRatesFromECB();
+  if (!r) return {};
+  const anchors = {
+    EURUSD: 1 / r.EUR,
+    GBPUSD: 1 / r.GBP,
+    USDJPY: r.JPY,
+    USDCHF: r.CHF,
+    USDCAD: r.CAD,
+    AUDUSD: 1 / r.AUD,
+    NZDUSD: 1 / r.NZD,
+    EURGBP: r.GBP / r.EUR,
+    EURJPY: r.JPY / r.EUR,
+    GBPJPY: r.JPY / r.GBP,
+  };
+  Object.keys(anchors).forEach((sym) => {
+    DATA_SOURCE[sym] = "daily";
+  });
+  return anchors;
 }
 
 export function getDataSource(symbol) {

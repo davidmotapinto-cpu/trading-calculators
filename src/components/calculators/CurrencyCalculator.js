@@ -7,8 +7,10 @@ import { SaveSimulationButton } from "../SaveSimulationButton.js";
 import { CURRENCIES, RATES } from "../../lib/fxRates.js";
 import { convertCurrency } from "../../lib/calculations.js";
 import { formatMoney } from "../../lib/format.js";
+import { useRatesTick } from "../../hooks/useRatesTick.js";
 
 export function CurrencyCalculator() {
+  useRatesTick();
   const [from, setFrom] = useState("USD");
   const [to, setTo] = useState("EUR");
   const [amount, setAmount] = useState(1000);
@@ -45,6 +47,7 @@ export function CurrencyCalculator() {
       <div class="result-box">
         <div class="result-main">Converted Amount: ${formatMoney(result, to)}</div>
         <div class="result-sub">Rate: 1 ${from} = ${effectiveRate.toFixed(4)} ${to} ${markup > 0 ? `(includes ${markup.toFixed(1)}% markup)` : ""}</div>
+        <div class="result-sub swap-note">${from === "AED" || to === "AED" ? "AED is a fixed government peg to USD, not a floating rate." : "Refreshed from the European Central Bank's daily reference rates."}</div>
       </div>
       <${FormulaExplainer}
         concept="currency conversion"
