@@ -10,11 +10,13 @@ import { AIInsight } from "../AIInsight.js";
 import { FormulaExplainer } from "../FormulaExplainer.js";
 import { TradeCTA } from "../TradeCTA.js";
 import { SaveSimulationButton } from "../SaveSimulationButton.js";
+import { AccountTypeCompare } from "../AccountTypeCompare.js";
 import { useAccount } from "../../context/AccountContext.js";
 import { useLiveTicker } from "../../hooks/useLiveTicker.js";
 import { getInstrument, lotRangeFor, getQuote, priceSpanFor } from "../../lib/instruments.js";
 import { priceDecimals } from "../../lib/priceFormat.js";
-import { calculateMargin, calculateProfit, calculateRisk, calculateWorstCase, calculateMarginCallPrice, calculateReturnOnMargin } from "../../lib/calculations.js";
+import { calculateMargin, calculateProfit, calculatePipValue, calculateRisk, calculateWorstCase, calculateMarginCallPrice, calculateReturnOnMargin } from "../../lib/calculations.js";
+import { estimateTradingCost } from "../../lib/accountTypes.js";
 import { RATES } from "../../lib/fxRates.js";
 import { formatMoney } from "../../lib/format.js";
 
@@ -43,10 +45,17 @@ export function ProfitCalculator() {
 
   const lotsError = lots <= 0 ? "Lot size must be greater than zero." : null;
 
+  const { perUnitAccount: pipValuePerUnitAccount } = useMemo(
+    () => calculatePipValue({ instrument: priced, lots, accountCcy: account.currency, rates: RATES }),
+    [priced.price, lots, account.currency]
+  );
+  const tradingCost = estimateTradingCost({ accountType: account.accountType, lots, pipValuePerUnitAccount });
+  const totalFees = fees + tradingCost.totalCost;
+
   const { grossAccount, netAccount, pipsMoved } = useMemo(() => {
     if (openPrice == null || closePrice == null) return { grossAccount: 0, netAccount: 0, pipsMoved: 0 };
-    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees });
-  }, [priced.price, direction, lots, openPrice, closePrice, fees, account.currency]);
+    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: totalFees });
+  }, [priced.price, direction, lots, openPrice, closePrice, totalFees, account.currency]);
 
   const { marginAccount } = useMemo(
     () => calculateMargin({ instrument: priced, lots, leverage: account.leverage, accountCcy: account.currency, rates: RATES }),
@@ -55,8 +64,8 @@ export function ProfitCalculator() {
 
   const worstCase = useMemo(() => {
     if (openPrice == null) return { worstLoss: 0 };
-    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, fees });
-  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, fees]);
+    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, fees: totalFees });
+  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, totalFees]);
 
   const risk = calculateRisk({ accountEquity: account.balance, marginRequired: marginAccount, potentialLoss: worstCase.worstLoss });
   const returnOnMarginPct = calculateReturnOnMargin({ netAccount, marginAccount });
@@ -64,8 +73,8 @@ export function ProfitCalculator() {
   const marginCushion = Math.max(0, account.balance - marginAccount);
   const marginCall = useMemo(() => {
     if (openPrice == null) return { price: null, distancePct: null };
-    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, fees });
-  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, fees]);
+    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, fees: totalFees });
+  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, totalFees]);
 
   return html`
     <div class="calc-card">
@@ -98,7 +107,8 @@ export function ProfitCalculator() {
       <${SliderField} label="Fees" value=${fees} min="0" max="100" step="0.5" onChange=${setFees} format=${(v) => `$${v.toFixed(2)}`} />
       <div class="result-box">
         <div class="result-main ${netAccount >= 0 ? "positive" : "negative"}">Potential P/L: ${netAccount >= 0 ? "+" : ""}${formatMoney(netAccount, account.currency)}</div>
-        <div class="result-sub">Gross: ${formatMoney(grossAccount, account.currency)} · Moved ${pipsMoved.toFixed(1)} ${instrument.unitLabel}s · Fees: ${formatMoney(fees, account.currency)}</div>
+        <div class="result-sub">Gross: ${formatMoney(grossAccount, account.currency)} · Moved ${pipsMoved.toFixed(1)} ${instrument.unitLabel}s</div>
+        <div class="result-sub">${account.accountType === "premier" ? "Commission" : "Spread cost"}: ${formatMoney(tradingCost.totalCost, account.currency)} (${account.accountType === "premier" ? "Premier" : "Standard"} account) ${fees > 0 ? `· Manual fees: ${formatMoney(fees, account.currency)}` : ""}</div>
         ${returnOnMarginPct != null &&
         html`<div class="result-sub return-on-margin ${returnOnMarginPct >= 0 ? "positive" : "negative"}">Return on margin used: ${returnOnMarginPct >= 0 ? "+" : ""}${returnOnMarginPct.toFixed(1)}% (1:${account.leverage} leverage)</div>`}
       </div>
@@ -112,12 +122,13 @@ export function ProfitCalculator() {
         rates=${RATES}
         rangePct=${spanPct}
         decimals=${decimals}
-        fees=${fees}
+        fees=${totalFees}
         marginCallPrice=${marginCall.price}
         marginCallDistancePct=${marginCall.distancePct}
         onReset=${() => { setOpenPrice(livePrice); setClosePrice(livePrice); }}
       />
       <${RiskGauge} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} level=${risk.level} />
+      <${AccountTypeCompare} lots=${lots} pipValuePerUnitAccount=${pipValuePerUnitAccount} accountCcy=${account.currency} currentType=${account.accountType} />
       <${AIInsight} level=${risk.level} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} marginAccount=${marginAccount} lossAmount=${worstCase.worstLoss} accountCcy=${account.currency} lots=${lots} lotStep=${range.step} marginCallDistancePct=${marginCall.distancePct} leverage=${account.leverage} />
       <${FormulaExplainer}
         concept="profit/loss"

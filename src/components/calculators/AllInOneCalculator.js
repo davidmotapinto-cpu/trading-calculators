@@ -8,11 +8,13 @@ import { RiskGauge } from "../RiskGauge.js";
 import { AIInsight } from "../AIInsight.js";
 import { TradeCTA } from "../TradeCTA.js";
 import { SaveSimulationButton } from "../SaveSimulationButton.js";
+import { AccountTypeCompare } from "../AccountTypeCompare.js";
 import { useAccount } from "../../context/AccountContext.js";
 import { useLiveTicker } from "../../hooks/useLiveTicker.js";
 import { getInstrument, lotRangeFor, getQuote, priceSpanFor } from "../../lib/instruments.js";
 import { priceDecimals } from "../../lib/priceFormat.js";
 import { calculateMargin, calculatePipValue, calculateProfit, calculateSwap, calculateRisk, calculateWorstCase, calculateMarginCallPrice, calculateReturnOnMargin } from "../../lib/calculations.js";
+import { estimateTradingCost } from "../../lib/accountTypes.js";
 import { RATES } from "../../lib/fxRates.js";
 import { formatMoney } from "../../lib/format.js";
 
@@ -48,18 +50,20 @@ export function AllInOneCalculator() {
     () => calculatePipValue({ instrument: priced, lots, accountCcy: account.currency, rates: RATES }),
     [priced.price, lots, account.currency]
   );
+  const tradingCost = estimateTradingCost({ accountType: account.accountType, lots, pipValuePerUnitAccount: pip.perUnitAccount });
+
   const profit = useMemo(() => {
     if (openPrice == null || closePrice == null) return { netAccount: 0, grossAccount: 0, pipsMoved: 0 };
-    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES });
-  }, [priced.price, direction, lots, openPrice, closePrice, account.currency]);
+    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: tradingCost.totalCost });
+  }, [priced.price, direction, lots, openPrice, closePrice, account.currency, tradingCost.totalCost]);
   const swap = useMemo(
     () => calculateSwap({ instrument: priced, direction, lots, nights, accountCcy: account.currency, rates: RATES }),
     [priced.price, direction, lots, nights, account.currency]
   );
   const worstCase = useMemo(() => {
     if (openPrice == null) return { worstLoss: 0 };
-    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, swapTotal: swap.totalAccount });
-  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, swap.totalAccount]);
+    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, swapTotal: swap.totalAccount, fees: tradingCost.totalCost });
+  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, swap.totalAccount, tradingCost.totalCost]);
 
   const risk = calculateRisk({
     accountEquity: account.balance,
@@ -72,8 +76,8 @@ export function AllInOneCalculator() {
   const marginCushion = Math.max(0, account.balance - margin.marginAccount);
   const marginCall = useMemo(() => {
     if (openPrice == null) return { price: null, distancePct: null };
-    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, swapTotal: swap.totalAccount });
-  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, swap.totalAccount]);
+    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, swapTotal: swap.totalAccount, fees: tradingCost.totalCost });
+  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, swap.totalAccount, tradingCost.totalCost]);
 
   return html`
     <div class="calc-card all-in-one">
@@ -121,6 +125,10 @@ export function AllInOneCalculator() {
           <div class="output-label">Swap (${nights}n)</div>
           <div class="output-value ${swap.totalAccount >= 0 ? "positive" : "negative"}">${formatMoney(swap.totalAccount, account.currency)}</div>
         </div>
+        <div class="output-card">
+          <div class="output-label">${account.accountType === "premier" ? "Commission" : "Spread Cost"} (${account.accountType === "premier" ? "Premier" : "Standard"})</div>
+          <div class="output-value">${formatMoney(tradingCost.totalCost, account.currency)}</div>
+        </div>
         ${returnOnMarginPct != null &&
         html`
           <div class="output-card">
@@ -140,12 +148,14 @@ export function AllInOneCalculator() {
         rates=${RATES}
         rangePct=${spanPct}
         decimals=${decimals}
+        fees=${tradingCost.totalCost}
         swapTotal=${swap.totalAccount}
         marginCallPrice=${marginCall.price}
         marginCallDistancePct=${marginCall.distancePct}
         onReset=${() => { setOpenPrice(livePrice); setClosePrice(livePrice); }}
       />
       <${RiskGauge} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} level=${risk.level} />
+      <${AccountTypeCompare} lots=${lots} pipValuePerUnitAccount=${pip.perUnitAccount} accountCcy=${account.currency} currentType=${account.accountType} />
       <${AIInsight} level=${risk.level} marginUtilizationPct=${risk.marginUtilizationPct} lossPct=${risk.lossPct} marginAccount=${margin.marginAccount} lossAmount=${worstCase.worstLoss} accountCcy=${account.currency} lots=${lots} lotStep=${range.step} marginCallDistancePct=${marginCall.distancePct} leverage=${leverage} />
       <${TradeCTA} label="Start Trading" />
       <${SaveSimulationButton}

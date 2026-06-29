@@ -8,6 +8,8 @@ const DEFAULT_ACCOUNT = {
   leverage: 200,
   balance: 10000, // treated as equity in this simulation (no live floating P/L feed)
   usedMargin: 2000,
+  accountType: "standard", // "standard" | "premier" — see src/lib/accountTypes.js
+  hasAccount: true, // false = prospective client exploring before opening one
 };
 
 async function fetchAccount() {
