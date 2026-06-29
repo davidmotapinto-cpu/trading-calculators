@@ -43,8 +43,15 @@ export function calculateSwap({ instrument, direction, lots, nights, accountCcy,
     const notionalQuote = lots * instrument.contractSize * instrument.price;
     perNightQuote = (notionalQuote * (ratePerLot / 100)) / 365;
   } else {
-    // Points-based swap: rate is quoted in pips/points per lot per night.
-    perNightQuote = ratePerLot * instrument.tickSize * instrument.contractSize * lots;
+    // Points-based swap. Brokers quote FX swap in MT5-style "points," where
+    // for a 4/5-decimal Forex pair 1 pip = 10 points — i.e. the swap unit is
+    // a tenth of the pip used everywhere else in this file. Metals/oil don't
+    // subdivide their quoted price that way, so their swap rate is already
+    // in the same units as tickSize. Using tickSize directly for Forex here
+    // previously inflated every FX pair's swap cost by 10x (e.g. EURUSD
+    // showed -$62/night/lot against a real-world figure of roughly -$6).
+    const swapUnitSize = instrument.category === "Forex" ? instrument.tickSize / 10 : instrument.tickSize;
+    perNightQuote = ratePerLot * swapUnitSize * instrument.contractSize * lots;
   }
   const perNightAccount = convertCurrency(perNightQuote, instrument.quote, accountCcy, rates);
   return { perNightAccount, totalAccount: perNightAccount * nights };
