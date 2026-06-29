@@ -5,6 +5,7 @@ import { SliderField } from "../SliderField.js";
 import { InfoTooltip } from "../InfoTooltip.js";
 import { FormulaExplainer } from "../FormulaExplainer.js";
 import { SaveSimulationButton } from "../SaveSimulationButton.js";
+import { DataSourceBadge } from "../DataSourceBadge.js";
 import { useAccount } from "../../context/AccountContext.js";
 import { useLiveTicker } from "../../hooks/useLiveTicker.js";
 import { getInstrument, lotRangeFor, getQuote } from "../../lib/instruments.js";
@@ -42,8 +43,8 @@ export function PipValueCalculator() {
       <${InstrumentPicker} value=${symbol} onChange=${setSymbol} />
       <div class="live-price">
         Mid price: <strong>${livePrice.toFixed(decimals)}</strong>
-        <span class="live-dot" title="Simulated price feed — not connected to a live market data source"></span>
-        <span class="sim-badge">Simulated</span>
+        <span class="live-dot"></span>
+        <${DataSourceBadge} symbol=${symbol} />
         <span class="live-quote"><span class="bid">Bid ${quote.bid.toFixed(decimals)}</span><span class="ask">Ask ${quote.ask.toFixed(decimals)}</span></span>
       </div>
       <${SliderField} label="Lot Size" value=${lots} min=${range.min} max=${range.max} step=${range.step} onChange=${setLots} format=${(v) => v.toFixed(2)} />
