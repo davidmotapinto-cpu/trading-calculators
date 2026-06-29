@@ -15,7 +15,7 @@ import { useAccount } from "../../context/AccountContext.js";
 import { useLiveTicker } from "../../hooks/useLiveTicker.js";
 import { getInstrument, lotRangeFor, getQuote, priceSpanFor } from "../../lib/instruments.js";
 import { priceDecimals } from "../../lib/priceFormat.js";
-import { calculateMargin, calculateProfit, calculatePipValue, calculateRisk, calculateWorstCase, calculateMarginCallPrice, calculateReturnOnMargin } from "../../lib/calculations.js";
+import { calculateMargin, calculateProfit, calculatePipValue, calculateSwap, calculateRisk, calculateWorstCase, calculateMarginCallPrice, calculateReturnOnMargin } from "../../lib/calculations.js";
 import { estimateTradingCost } from "../../lib/accountTypes.js";
 import { RATES } from "../../lib/fxRates.js";
 import { formatMoney } from "../../lib/format.js";
@@ -28,6 +28,7 @@ export function ProfitCalculator() {
   const [openPrice, setOpenPrice] = useState(null);
   const [closePrice, setClosePrice] = useState(null);
   const [fees, setFees] = useState(0);
+  const [nights, setNights] = useState(0);
 
   const instrument = getInstrument(symbol);
   const livePrice = useLiveTicker(symbol);
@@ -52,10 +53,15 @@ export function ProfitCalculator() {
   const tradingCost = estimateTradingCost({ accountType: account.accountType, lots, pipValuePerUnitAccount });
   const totalFees = fees + tradingCost.totalCost;
 
+  const swap = useMemo(
+    () => calculateSwap({ instrument: priced, direction, lots, nights, accountCcy: account.currency, rates: RATES }),
+    [priced.price, direction, lots, nights, account.currency]
+  );
+
   const { grossAccount, netAccount, pipsMoved } = useMemo(() => {
     if (openPrice == null || closePrice == null) return { grossAccount: 0, netAccount: 0, pipsMoved: 0 };
-    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: totalFees });
-  }, [priced.price, direction, lots, openPrice, closePrice, totalFees, account.currency]);
+    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: totalFees, swapTotal: swap.totalAccount });
+  }, [priced.price, direction, lots, openPrice, closePrice, totalFees, swap.totalAccount, account.currency]);
 
   const { marginAccount } = useMemo(
     () => calculateMargin({ instrument: priced, lots, leverage: account.leverage, accountCcy: account.currency, rates: RATES }),
@@ -64,8 +70,8 @@ export function ProfitCalculator() {
 
   const worstCase = useMemo(() => {
     if (openPrice == null) return { worstLoss: 0 };
-    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, fees: totalFees });
-  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, totalFees]);
+    return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, fees: totalFees, swapTotal: swap.totalAccount });
+  }, [priced.price, direction, lots, openPrice, account.currency, spanPct, totalFees, swap.totalAccount]);
 
   const risk = calculateRisk({ accountEquity: account.balance, marginRequired: marginAccount, potentialLoss: worstCase.worstLoss });
   const returnOnMarginPct = calculateReturnOnMargin({ netAccount, marginAccount });
@@ -73,8 +79,8 @@ export function ProfitCalculator() {
   const marginCushion = Math.max(0, account.balance - marginAccount);
   const marginCall = useMemo(() => {
     if (openPrice == null) return { price: null, distancePct: null };
-    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, fees: totalFees });
-  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, totalFees]);
+    return calculateMarginCallPrice({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, marginCushion, fees: totalFees, swapTotal: swap.totalAccount });
+  }, [priced.price, direction, lots, openPrice, account.currency, marginCushion, totalFees, swap.totalAccount]);
 
   return html`
     <div class="calc-card">
@@ -104,11 +110,16 @@ export function ProfitCalculator() {
           <${PriceField} label="Close Price" value=${closePrice} step=${instrument.tickSize} decimals=${decimals} onChange=${setClosePrice} spanPct=${spanPct} />
         </div>
       `}
-      <${SliderField} label="Fees" value=${fees} min="0" max="100" step="0.5" onChange=${setFees} format=${(v) => `$${v.toFixed(2)}`} />
+      <div class="row-2">
+        <${SliderField} label="Fees" value=${fees} min="0" max="100" step="0.5" onChange=${setFees} format=${(v) => `$${v.toFixed(2)}`} />
+        <${SliderField} label="Nights Held (swap)" value=${nights} min="0" max="30" step="1" onChange=${setNights} />
+      </div>
       <div class="result-box">
         <div class="result-main ${netAccount >= 0 ? "positive" : "negative"}">Potential P/L: ${netAccount >= 0 ? "+" : ""}${formatMoney(netAccount, account.currency)}</div>
         <div class="result-sub">Gross: ${formatMoney(grossAccount, account.currency)} · Moved ${pipsMoved.toFixed(1)} ${instrument.unitLabel}s</div>
         <div class="result-sub">${account.accountType === "premier" ? "Commission" : "Spread cost"}: ${formatMoney(tradingCost.totalCost, account.currency)} (${account.accountType === "premier" ? "Premier" : "Standard"} account) ${fees > 0 ? `· Manual fees: ${formatMoney(fees, account.currency)}` : ""}</div>
+        ${nights > 0 &&
+        html`<div class="result-sub ${swap.totalAccount >= 0 ? "positive" : "negative"}">Swap (${nights} night${nights === 1 ? "" : "s"}): ${swap.totalAccount >= 0 ? "+" : ""}${formatMoney(swap.totalAccount, account.currency)}</div>`}
         ${returnOnMarginPct != null &&
         html`<div class="result-sub return-on-margin ${returnOnMarginPct >= 0 ? "positive" : "negative"}">Return on margin used: ${returnOnMarginPct >= 0 ? "+" : ""}${returnOnMarginPct.toFixed(1)}% (1:${account.leverage} leverage)</div>`}
       </div>
@@ -123,6 +134,7 @@ export function ProfitCalculator() {
         rangePct=${spanPct}
         decimals=${decimals}
         fees=${totalFees}
+        swapTotal=${swap.totalAccount}
         marginCallPrice=${marginCall.price}
         marginCallDistancePct=${marginCall.distancePct}
         onReset=${() => { setOpenPrice(livePrice); setClosePrice(livePrice); }}
@@ -141,7 +153,7 @@ export function ProfitCalculator() {
         calculator="Profit"
         instrument=${instrument.label}
         summary=${`${direction === "buy" ? "Buy" : "Sell"} ${lots.toFixed(2)} lots: ${netAccount >= 0 ? "+" : ""}${formatMoney(netAccount, account.currency)}`}
-        details=${{ "Open": openPrice?.toFixed(decimals), "Close": closePrice?.toFixed(decimals), "Fees": formatMoney(fees, account.currency), "Risk": risk.level }}
+        details=${{ "Open": openPrice?.toFixed(decimals), "Close": closePrice?.toFixed(decimals), "Fees": formatMoney(fees, account.currency), "Swap": formatMoney(swap.totalAccount, account.currency), "Risk": risk.level }}
       />
     </div>
   `;
