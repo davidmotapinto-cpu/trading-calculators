@@ -52,14 +52,15 @@ export function AllInOneCalculator() {
   );
   const tradingCost = estimateTradingCost({ accountType: account.accountType, lots, pipValuePerUnitAccount: pip.perUnitAccount });
 
-  const profit = useMemo(() => {
-    if (openPrice == null || closePrice == null) return { netAccount: 0, grossAccount: 0, pipsMoved: 0 };
-    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: tradingCost.totalCost });
-  }, [priced.price, direction, lots, openPrice, closePrice, account.currency, tradingCost.totalCost]);
   const swap = useMemo(
     () => calculateSwap({ instrument: priced, direction, lots, nights, accountCcy: account.currency, rates: RATES }),
     [priced.price, direction, lots, nights, account.currency]
   );
+
+  const profit = useMemo(() => {
+    if (openPrice == null || closePrice == null) return { netAccount: 0, grossAccount: 0, pipsMoved: 0 };
+    return calculateProfit({ instrument: priced, direction, lots, openPrice, closePrice, accountCcy: account.currency, rates: RATES, fees: tradingCost.totalCost, swapTotal: swap.totalAccount });
+  }, [priced.price, direction, lots, openPrice, closePrice, account.currency, tradingCost.totalCost, swap.totalAccount]);
   const worstCase = useMemo(() => {
     if (openPrice == null) return { worstLoss: 0 };
     return calculateWorstCase({ instrument: priced, direction, lots, openPrice, accountCcy: account.currency, rates: RATES, rangePct: spanPct, swapTotal: swap.totalAccount, fees: tradingCost.totalCost });
@@ -71,7 +72,7 @@ export function AllInOneCalculator() {
     potentialLoss: worstCase.worstLoss,
   });
 
-  const returnOnMarginPct = calculateReturnOnMargin({ netAccount: profit.netAccount + swap.totalAccount, marginAccount: margin.marginAccount });
+  const returnOnMarginPct = calculateReturnOnMargin({ netAccount: profit.netAccount, marginAccount: margin.marginAccount });
 
   const marginCushion = Math.max(0, account.balance - margin.marginAccount);
   const marginCall = useMemo(() => {
@@ -118,7 +119,7 @@ export function AllInOneCalculator() {
           <div class="output-value">${formatMoney(pip.perUnitAccount, account.currency)}</div>
         </div>
         <div class="output-card">
-          <div class="output-label">Profit / Loss</div>
+          <div class="output-label">Net Profit / Loss</div>
           <div class="output-value ${profit.netAccount >= 0 ? "positive" : "negative"}">${profit.netAccount >= 0 ? "+" : ""}${formatMoney(profit.netAccount, account.currency)}</div>
         </div>
         <div class="output-card">
