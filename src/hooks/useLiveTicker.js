@@ -56,10 +56,23 @@ export function getLivePrice(symbol) {
 
 export function useLiveTicker(symbol) {
   ensureTimer();
-  const [price, setPrice] = useState(livePrices[symbol]);
+  const [price, setPrice] = useState(() => livePrices[symbol]);
+  const [trackedSymbol, setTrackedSymbol] = useState(symbol);
+
+  // Adjust state during render when the symbol prop changes (React's
+  // documented pattern for this) rather than in an effect. useState's lazy
+  // initializer only runs on mount, so switching symbols left `price`
+  // holding the *previous* instrument's value for one extra render — long
+  // enough for a sibling effect (e.g. resetting open/close price on symbol
+  // change) to read that stale value and seed a price field with it. Doing
+  // the update here means it's correct by the time this render finishes,
+  // not one render later.
+  if (symbol !== trackedSymbol) {
+    setTrackedSymbol(symbol);
+    setPrice(livePrices[symbol]);
+  }
 
   useEffect(() => {
-    setPrice(livePrices[symbol]);
     const listener = () => setPrice(livePrices[symbol]);
     listeners.add(listener);
     return () => listeners.delete(listener);
