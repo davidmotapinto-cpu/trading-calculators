@@ -59,6 +59,17 @@ body {
   font-size: 14.5px;
 }
 
+.business-case-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  text-decoration: none;
+}
+
+.business-case-link:hover { text-decoration: underline; }
+
 /* Account panel */
 .account-panel {
   background: var(--surface);

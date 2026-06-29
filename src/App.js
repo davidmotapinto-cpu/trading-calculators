@@ -31,6 +31,7 @@ function AppShell() {
       <header class="app-header">
         <h1>Trading Calculators</h1>
         <p>A smart assistant for sizing trades, estimating costs, and understanding risk before you execute.</p>
+        <a class="business-case-link" href="business-case.html">View the business case →</a>
       </header>
       <${AccountPanel} />
       <nav class="tabs">
