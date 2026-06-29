@@ -155,6 +155,31 @@
   table.scenario td.delta { color: var(--green); font-weight: 700; }
   table.scenario tr:last-child td { border-bottom: none; font-weight: 700; color: var(--navy); }
 
+  .disclaimer-banner {
+    background: #fff6e8;
+    border: 1px solid var(--yellow);
+    color: #6b4a00;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 32px 0 28px;
+  }
+  .disclaimer-banner strong { color: #4a3200; }
+
+  .facts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .facts-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .facts-card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 12px; }
+  .facts-card.real h3 { color: var(--green); }
+  .facts-card.modeled h3 { color: #b8860b; }
+  .facts-card ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: var(--text); }
+  .facts-card .src { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
+
   .summary-band {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -181,7 +206,7 @@
 
   @media (max-width: 760px) {
     .stat-row, .benefit-grid { grid-template-columns: repeat(2, 1fr); }
-    .chart-grid, .summary-cols { grid-template-columns: 1fr; }
+    .chart-grid, .summary-cols, .facts-grid { grid-template-columns: 1fr; }
     .hero h1 { font-size: 26px; }
   }
 </style>
@@ -190,18 +215,46 @@
 
 <div class="hero">
   <span class="eyebrow">Equiti · Trading Calculators</span>
-  <h1>What this tool is worth to Equiti</h1>
-  <p>A quantitative and qualitative look at the business case for the trading calculators suite — support savings, conversion uplift, and brand positioning, modeled on Equiti's traffic and support volume.</p>
+  <h1>What this tool could be worth to Equiti</h1>
+  <p>A planning model for the business case — built from public facts about Equiti where they exist, and clearly-labeled industry-benchmark assumptions everywhere actual traffic, conversion, and support data isn't available to me.</p>
   <a class="hero-cta" href="index.html">Open the live calculators →</a>
 </div>
 
 <div class="wrap">
-  <div class="stat-row">
-    <div class="stat-card"><div class="num teal">$1.73M</div><div class="label">Est. annual impact (medium scenario)</div></div>
-    <div class="stat-card"><div class="num">+12%</div><div class="label">Conversion uplift (relative)</div></div>
-    <div class="stat-card"><div class="num">40%</div><div class="label">Calculator-related tickets deflected</div></div>
-    <div class="stat-card"><div class="num">216 hrs</div><div class="label">Support hours saved per year</div></div>
+  <div class="disclaimer-banner">
+    <strong>Read this first:</strong> every dollar figure and percentage below is a <em>modeled estimate</em>, not measured Equiti data — I have no access to Equiti's actual website analytics, support desk, or revenue figures. The "Grounded in public facts" section explains exactly which pieces are real and which are placeholders waiting for Equiti's own numbers.
   </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="num teal">$1.73M</div><div class="label">Modeled annual impact (medium scenario)</div></div>
+    <div class="stat-card"><div class="num">+12%</div><div class="label">Assumed conversion uplift (relative)</div></div>
+    <div class="stat-card"><div class="num">40%</div><div class="label">Assumed ticket deflection rate</div></div>
+    <div class="stat-card"><div class="num">216 hrs</div><div class="label">Modeled support hours saved/year</div></div>
+  </div>
+
+  <section>
+    <h2 class="section-title">Grounded in public facts</h2>
+    <p class="section-sub">Website traffic, conversion rates, support-ticket volume, and revenue-per-client are private operational data — not published anywhere, and not something I have access to. Here's exactly which parts of this page rest on verifiable facts versus which are placeholders.</p>
+    <div class="facts-grid">
+      <div class="facts-card real">
+        <h3>✓ Real, sourced facts</h3>
+        <ul>
+          <li>Equiti is a multi-entity broker regulated by the FCA (UK), CySEC (EU), Jordan Securities Commission, UAE SCA, Kenya's CMA, Seychelles FSA, and the Central Bank of Armenia.<span class="src">Source: equiti.com/about-us</span></li>
+          <li>Strong genuine MENA footprint — offices in Dubai and Amman, Arabic-language support, and MENA-specific pairs (USD/AED, USD/SAR, USD/EGP, USD/JOD).<span class="src">Source: broker review aggregators (FXLeaders, TradersUnion, ComapareBroker)</span></li>
+          <li>This calculator's AED account-currency support isn't arbitrary — it reflects that genuine regional offering.</li>
+          <li>FCA licence carries FSCS protection up to £85,000; CySEC licence carries ICF coverage up to €20,000.<span class="src">Source: equiti.com/about-us</span></li>
+        </ul>
+      </div>
+      <div class="facts-card modeled">
+        <h3>⚠ Modeled placeholders</h3>
+        <ul>
+          <li>Monthly traffic (200K), baseline conversion rate (2.5%), and average client revenue ($800/yr) — all assumptions, not Equiti figures.</li>
+          <li>Support desk size (12 agents), cost/hour ($20), and ticket volume (15,000/mo) — assumptions, calibrated only to "moderate-traffic broker" scale.</li>
+          <li>The 1–2% calculator-related ticket share is the one figure carried over from this project's own discovery phase — described as the CS team's own estimate, not independently verified here.</li>
+          <li>Conversion uplift (10–30%) and support deflection (20–40%) ranges are general interactive-tool industry benchmarks, not Equiti-specific results.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
   <section>
     <h2 class="section-title">Where the impact comes from</h2>
