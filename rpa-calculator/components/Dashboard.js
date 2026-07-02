@@ -177,7 +177,7 @@ function GrowthCurve({ points, currentClients }) {
       `)}
 
       <span style=${{ position: "absolute", left: pL + "%", bottom: "0", fontSize: "9px", color: "#7C93AB" }}>1</span>
-      <span style=${{ position: "absolute", right: pR + "%", bottom: "0", fontSize: "9px", color: "#7C93AB" }}>100 clients</span>
+      <span style=${{ position: "absolute", right: pR + "%", bottom: "0", fontSize: "9px", color: "#7C93AB" }}>${n} clients</span>
 
       <div style=${{ position: "absolute", left: curX + "%", top: curY + "%", width: "9px", height: "9px", borderRadius: "50%", background: "rgba(20,201,180,0.18)", transform: "translate(-50%,-50%)" }}></div>
       <div style=${{ position: "absolute", left: curX + "%", top: curY + "%", width: "5px", height: "5px", borderRadius: "50%", background: TEAL, transform: "translate(-50%,-50%)", boxShadow: "0 0 6px " + TEAL }}></div>
@@ -215,7 +215,7 @@ export function Dashboard({ result, clients }) {
       <div class="card-glow" style=${{ padding: "26px 30px" }}>
         <div class="lbl" style=${{ marginBottom: "9px", letterSpacing: "0.16em" }}>ESTIMATED MONTHLY EARNINGS</div>
 
-        <div style=${{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <div style=${{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div>
             <div class="earnings-num">${bigNum}</div>
             <div style=${{ fontSize: "11px", color: "#9BB0C6", marginTop: "7px", fontFamily: '"JetBrains Mono", monospace' }}>per month · 30-day rolling window</div>
@@ -228,19 +228,23 @@ export function Dashboard({ result, clients }) {
           </div>
         </div>
 
-        <div style=${{ display: "flex", gap: "10px", marginTop: "18px" }}>
-          <div class="metric-pill">
+        <div style=${{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "18px" }}>
+          <div class="metric-pill" style=${{ minWidth: "120px" }}>
             <div class="lbl" style=${{ marginBottom: "5px" }}>Per Client</div>
             <div style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "18px", fontWeight: "700", color: "#FFFFFF" }}>${fmtUSD(perClient)}</div>
           </div>
-          <div class="metric-pill">
+          <div class="metric-pill" style=${{ minWidth: "120px" }}>
             <div class="lbl" style=${{ marginBottom: "5px" }}>Total Lots Traded</div>
             <div style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "18px", fontWeight: "700", color: "#FFFFFF" }}>${totalLots.toLocaleString()}</div>
           </div>
-          <div class="metric-pill">
+          <div class="metric-pill" style=${{ minWidth: "120px" }}>
             <div class="lbl" style=${{ marginBottom: "5px" }}>Total Volume</div>
             <div style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "18px", fontWeight: "700", color: "#FFFFFF" }}>${fmtVol(totalDolVol)}</div>
           </div>
+        </div>
+
+        <div style=${{ fontSize: "10px", color: "#5E7A93", marginTop: "14px", lineHeight: "1.5" }}>
+          Estimate based on historical account performance — not a guarantee of future payouts. Actual RPA rewards depend on final reconciled trading activity.
         </div>
       </div>
 
@@ -280,12 +284,18 @@ export function Dashboard({ result, clients }) {
       </div>
 
       <!-- ── Insight Cards ── -->
-      <div style=${{ display: "flex", gap: "12px" }}>
-        <div class="insight-card">
+      <div style=${{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+        <div class="insight-card" style=${{ minWidth: "220px" }}>
           <div style=${{ fontSize: "10px", fontWeight: "750", color: nextTier ? nextTier.color : "#F0C355", letterSpacing: "0.09em", marginBottom: "8px" }}>
             ${nextTier ? "CLIENT GOAL" : "ELITE TIER ACTIVE"}
           </div>
-          ${nextTier
+          ${finalReward <= 0
+            ? html`
+                <div style=${{ fontSize: "12px", color: "#C7D4E3", lineHeight: "1.6" }}>
+                  Add an instrument to see how many more clients you'd need to reach ${nextTier ? nextTier.name : "the next tier"}.
+                </div>
+              `
+            : nextTier
             ? html`
                 <div style=${{ fontSize: "12px", color: "#C7D4E3", lineHeight: "1.6", marginBottom: "10px" }}>
                   Bring <strong style=${{ color: "#FFFFFF", fontSize: "15px" }}>${clientsToNext}</strong> more clients to unlock <span style=${{ color: nextTier.color, fontWeight: "700" }}>${nextTier.name}</span>
@@ -296,7 +306,7 @@ export function Dashboard({ result, clients }) {
                   <span style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "15px", fontWeight: "700", color: nextTier.color }}>${fmtUSD(earningsAtNext)}</span>
                 </div>
                 <div style=${{ fontSize: "10px", color: "#7C93AB" }}>
-                  +${((earningsAtNext / Math.max(finalReward, 0.01) - 1) * 100).toFixed(0)}% earnings at same trading volume
+                  +${((earningsAtNext / finalReward - 1) * 100).toFixed(0)}% earnings at same trading volume
                 </div>
               `
             : html`
@@ -307,19 +317,28 @@ export function Dashboard({ result, clients }) {
           }
         </div>
 
-        <div class="insight-card insight-card-blue">
+        <div class="insight-card insight-card-blue" style=${{ minWidth: "220px" }}>
           <div style=${{ fontSize: "10px", fontWeight: "750", color: "#7DA6FF", letterSpacing: "0.09em", marginBottom: "8px" }}>VOLUME GOAL</div>
-          <div style=${{ fontSize: "12px", color: "#C7D4E3", lineHeight: "1.6", marginBottom: "10px" }}>
-            If clients trade <strong style=${{ color: "#FFFFFF", fontSize: "15px" }}>+50%</strong> more lots per instrument
-          </div>
-          <div style=${{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-            <span style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "12px", color: "#8DA3BA" }}>${fmtUSD(finalReward)}</span>
-            <span style=${{ color: "#7DA6FF", fontSize: "15px" }}>→</span>
-            <span style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "15px", fontWeight: "700", color: "#7DA6FF" }}>${fmtUSD(finalReward * 1.5)}</span>
-          </div>
-          <div style=${{ fontSize: "10px", color: "#7C93AB" }}>
-            +${fmtUSD(finalReward * 0.5)} additional per month
-          </div>
+          ${finalReward <= 0
+            ? html`
+                <div style=${{ fontSize: "12px", color: "#C7D4E3", lineHeight: "1.6" }}>
+                  Add an instrument to see how trading volume affects your earnings.
+                </div>
+              `
+            : html`
+                <div style=${{ fontSize: "12px", color: "#C7D4E3", lineHeight: "1.6", marginBottom: "10px" }}>
+                  If clients trade <strong style=${{ color: "#FFFFFF", fontSize: "15px" }}>+50%</strong> more lots per instrument
+                </div>
+                <div style=${{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                  <span style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "12px", color: "#8DA3BA" }}>${fmtUSD(finalReward)}</span>
+                  <span style=${{ color: "#7DA6FF", fontSize: "15px" }}>→</span>
+                  <span style=${{ fontFamily: '"JetBrains Mono", monospace', fontSize: "15px", fontWeight: "700", color: "#7DA6FF" }}>${fmtUSD(finalReward * 1.5)}</span>
+                </div>
+                <div style=${{ fontSize: "10px", color: "#7C93AB" }}>
+                  +${fmtUSD(finalReward * 0.5)} additional per month
+                </div>
+              `
+          }
         </div>
       </div>
 
@@ -334,10 +353,13 @@ export function Dashboard({ result, clients }) {
         <div class="card" style=${{ flex: "1 1 260px", minWidth: "240px", padding: "15px 17px", display: "flex", flexDirection: "column" }}>
           <div style=${{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "8px" }}>
             <span class="lbl">EARNINGS PROJECTION</span>
-            <span style=${{ fontSize: "10px", color: "#5E7A93" }}>same lots/client · 1 to 100 clients</span>
+            <span style=${{ fontSize: "10px", color: "#5E7A93" }}>same lots/client · 1 to ${growthPoints.length} clients</span>
           </div>
           <div style=${{ flex: "1", minHeight: "160px" }}>
-            <${GrowthCurve} points=${growthPoints} currentClients=${clients} />
+            ${finalReward > 0
+              ? html`<${GrowthCurve} points=${growthPoints} currentClients=${clients} />`
+              : html`<div style=${{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: "#7C93AB" }}>Add an instrument to see your growth path</div>`
+            }
           </div>
         </div>
 

@@ -63,30 +63,40 @@ function flatInstruments(catalog) {
 }
 
 export function App() {
-  const [accountType,    setAccountType]    = useState("Standard");
-  const [clients,        setClients]        = useState(20);
-  const [instrumentLots, setInstrumentLots] = useState({ ...DEFAULT_LOTS.Standard });
+  const [accountType,   setAccountType]   = useState("Standard");
+  const [clients,       setClients]       = useState(20);
+  // Lots are kept per account type so switching between them never destroys
+  // a partner's configuration — each account type remembers its own setup,
+  // and switching back restores exactly what was there before.
+  const [lotsByAccount, setLotsByAccount] = useState({ Standard: { ...DEFAULT_LOTS.Standard } });
+
+  const instrumentLots = lotsByAccount[accountType] ?? DEFAULT_LOTS[accountType] ?? {};
 
   function handleAccountType(type) {
     setAccountType(type);
-    setInstrumentLots({ ...(DEFAULT_LOTS[type] || {}) });
   }
 
   function setLots(key, val) {
     const n = Math.max(0, Math.round(Number(val) || 0));
-    setInstrumentLots(prev => ({ ...prev, [key]: n }));
+    setLotsByAccount(prev => ({
+      ...prev,
+      [accountType]: { ...(prev[accountType] ?? DEFAULT_LOTS[accountType] ?? {}), [key]: n },
+    }));
   }
 
   function removeInstrument(key) {
-    setInstrumentLots(prev => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
+    setLotsByAccount(prev => {
+      const current = { ...(prev[accountType] ?? DEFAULT_LOTS[accountType] ?? {}) };
+      delete current[key];
+      return { ...prev, [accountType]: current };
     });
   }
 
   function addInstrument(key) {
-    setInstrumentLots(prev => ({ ...prev, [key]: 10 }));
+    setLotsByAccount(prev => ({
+      ...prev,
+      [accountType]: { ...(prev[accountType] ?? DEFAULT_LOTS[accountType] ?? {}), [key]: 10 },
+    }));
   }
 
   const catalog = useMemo(() => buildCatalog(accountType), [accountType]);
@@ -126,8 +136,14 @@ export function App() {
       ? baseReward * (nextTier.min / Math.max(1, clients)) * nextTier.multiplier
       : 0;
 
+    // Chart range always covers the partner's actual client count (with some
+    // headroom to show growth potential) instead of a hardcoded 1-100 — a
+    // partner past 100 clients used to see a "current position" marker frozen
+    // at the 100-client value, silently contradicting the real hero number.
+    const rangeMax = Math.min(500, Math.max(100, clients + 20));
+
     const growthPoints = [];
-    for (let c = 1; c <= 100; c++) {
+    for (let c = 1; c <= rangeMax; c++) {
       const t = getTier(c);
       let base = 0;
       allInst.forEach(inst => {
@@ -167,7 +183,7 @@ export function App() {
       </header>
       <div class="brand-strip"></div>
 
-      <div style=${{ flex: "1", display: "flex", overflow: "hidden" }}>
+      <div class="app-shell">
         <${LeftPanel}
           accountType=${accountType}
           onAccountType=${handleAccountType}

@@ -107,7 +107,7 @@ export function LeftPanel({
   });
 
   return html`
-    <aside style=${{ width: "380px", minWidth: "380px", borderRight: "1px solid rgba(255,255,255,0.08)", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+    <aside class="sidebar">
       <div style=${{ padding: "22px 20px", display: "flex", flexDirection: "column", gap: "22px" }}>
 
         <!-- ── Account Type ── -->

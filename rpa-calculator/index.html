@@ -74,6 +74,38 @@
       background-clip: text;
     }
 
+    /* ── Responsive layout ── */
+    /* Sidebar + main sit side by side on desktop; below the breakpoint they
+       stack vertically and the sidebar drops its fixed width so the main
+       dashboard (the whole point of the tool) is never squeezed unusable. */
+    .app-shell {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 380px;
+      min-width: 380px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 860px) {
+      .app-shell {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        width: 100%;
+        min-width: 0;
+        max-height: 60vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+    }
+
     /* ── Section label ── */
     .lbl {
       font-size: 10px;
@@ -288,6 +320,12 @@
       background: rgba(20,201,180,0.15);
       padding: 4px 9px; border-radius: 99px;
       margin-left: 8px; white-space: nowrap;
+    }
+
+    /* ── Small-screen overrides (kept last so they win the cascade) ── */
+    @media (max-width: 520px) {
+      .earnings-num { font-size: 44px; letter-spacing: -1.5px; }
+      header { padding: 12px 18px !important; }
     }
   </style>
 
