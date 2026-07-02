@@ -17,6 +17,7 @@
       --teal-d: #00A896;
       --blue:   #2F6FED;
       --teal-g: rgba(20,201,180,0.10);
+      --brand-gradient: linear-gradient(135deg, var(--teal), var(--teal-d));
       --border: rgba(255,255,255,0.09);
       --text:       #FFFFFF;
       --text-body:  #E4ECF5;
@@ -58,6 +59,19 @@
       background: rgba(47,111,237,0.06);
       border: 1px solid rgba(47,111,237,0.20);
       border-radius: 16px;
+    }
+
+    /* ── Brand ── */
+    .brand-strip {
+      height: 3px;
+      background: var(--brand-gradient);
+      flex-shrink: 0;
+    }
+    .brand-text {
+      background: var(--brand-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     /* ── Section label ── */

@@ -152,11 +152,11 @@ export function App() {
 
       <header style=${{ borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "16px 36px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <div style=${{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <div style=${{ width: "38px", height: "38px", borderRadius: "11px", background: "linear-gradient(135deg, #14C9B4, #2F6FED)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 18px rgba(20,201,180,0.35)" }}>
+          <div style=${{ width: "38px", height: "38px", borderRadius: "11px", background: "var(--brand-gradient)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 18px rgba(20,201,180,0.35)" }}>
             <span style=${{ color: "#fff", fontSize: "19px", fontWeight: "900" }}>E</span>
           </div>
           <div>
-            <div style=${{ fontSize: "18px", fontWeight: "750", color: "#FFFFFF", letterSpacing: "-0.02em" }}>Partner Earnings Simulator</div>
+            <div class="brand-text" style=${{ fontSize: "18px", fontWeight: "800", letterSpacing: "-0.02em" }}>Partner Earnings Simulator</div>
             <div style=${{ fontSize: "10px", color: "#7C93AB", letterSpacing: "0.12em", fontWeight: "700" }}>EQUITI IB PORTAL</div>
           </div>
         </div>
@@ -165,6 +165,7 @@ export function App() {
           <span style=${{ fontSize: "11px", color: "#7C93AB", fontFamily: '"JetBrains Mono", monospace', letterSpacing: "0.12em", fontWeight: "600" }}>LIVE</span>
         </div>
       </header>
+      <div class="brand-strip"></div>
 
       <div style=${{ flex: "1", display: "flex", overflow: "hidden" }}>
         <${LeftPanel}
