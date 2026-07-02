@@ -11,11 +11,12 @@
     *, *::before, *::after { box-sizing: border-box; }
 
     :root {
-      --navy:   #0A1826;
-      --navy2:  #0D2437;
-      --teal:   #00E5AC;
-      --teal-d: #00C896;
-      --teal-g: rgba(0,229,172,0.10);
+      --navy:   #0B1F33;
+      --navy2:  #10314F;
+      --teal:   #14C9B4;
+      --teal-d: #00A896;
+      --blue:   #2F6FED;
+      --teal-g: rgba(20,201,180,0.10);
       --border: rgba(255,255,255,0.09);
       --text:       #FFFFFF;
       --text-body:  #E4ECF5;
@@ -27,12 +28,12 @@
     html, body, #root {
       height: 100%; margin: 0; padding: 0;
       background:
-        radial-gradient(1200px 600px at 15% -10%, rgba(0,229,172,0.06), transparent),
-        radial-gradient(1000px 700px at 100% 10%, rgba(14,165,233,0.05), transparent),
+        radial-gradient(1200px 600px at 15% -10%, rgba(20,201,180,0.07), transparent),
+        radial-gradient(1000px 700px at 100% 10%, rgba(47,111,237,0.06), transparent),
         var(--navy);
       color: var(--text-body);
       font-family: "Inter", sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -45,23 +46,23 @@
     .card {
       background: rgba(255,255,255,0.035);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 16px;
     }
     .card-glow {
-      background: linear-gradient(160deg, rgba(0,229,172,0.07), rgba(14,165,233,0.03));
-      border: 1px solid rgba(0,229,172,0.28);
-      border-radius: 26px;
-      box-shadow: 0 0 100px rgba(0,229,172,0.10), inset 0 1px 0 rgba(255,255,255,0.08);
+      background: linear-gradient(160deg, rgba(20,201,180,0.08), rgba(47,111,237,0.03));
+      border: 1px solid rgba(20,201,180,0.28);
+      border-radius: 22px;
+      box-shadow: 0 0 90px rgba(20,201,180,0.09), inset 0 1px 0 rgba(255,255,255,0.08);
     }
     .card-blue {
-      background: rgba(96,165,250,0.05);
-      border: 1px solid rgba(96,165,250,0.18);
-      border-radius: 18px;
+      background: rgba(47,111,237,0.06);
+      border: 1px solid rgba(47,111,237,0.20);
+      border-radius: 16px;
     }
 
     /* ── Section label ── */
     .lbl {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.10em;
       text-transform: uppercase;
@@ -73,20 +74,20 @@
       display: flex; align-items: center;
       width: 100%;
       background: rgba(255,255,255,0.04);
-      border: 1.5px solid rgba(0,229,172,0.30);
-      border-radius: 14px;
-      padding: 13px 16px;
+      border: 1.5px solid rgba(20,201,180,0.32);
+      border-radius: 12px;
+      padding: 11px 14px;
       cursor: pointer; transition: all 0.18s;
       font-family: inherit;
     }
     .acct-select-btn:hover {
-      background: rgba(0,229,172,0.06);
-      border-color: rgba(0,229,172,0.55);
+      background: rgba(20,201,180,0.07);
+      border-color: rgba(20,201,180,0.58);
     }
     .inst-count-chip {
-      font-size: 11px; font-weight: 700; color: #00E5AC;
-      background: rgba(0,229,172,0.12);
-      padding: 4px 10px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; color: #14C9B4;
+      background: rgba(20,201,180,0.13);
+      padding: 4px 9px; border-radius: 99px;
       white-space: nowrap;
     }
 
@@ -94,10 +95,10 @@
     .earnings-num {
       font-family: "JetBrains Mono", monospace;
       font-weight: 800;
-      font-size: 72px;
+      font-size: 62px;
       line-height: 1;
-      letter-spacing: -3px;
-      background: linear-gradient(130deg, #00FFC2 0%, #00E5AC 30%, #22D3EE 70%, #60A5FA 100%);
+      letter-spacing: -2.5px;
+      background: linear-gradient(135deg, #22DFC8 0%, #14C9B4 40%, #4A8CF5 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -106,12 +107,12 @@
     /* ── Tier badges ── */
     .tier-badge {
       display: inline-flex; align-items: center;
-      font-size: 11px; font-weight: 750;
+      font-size: 10px; font-weight: 750;
       letter-spacing: 0.05em;
-      padding: 5px 13px; border-radius: 99px; border: 1.5px solid;
+      padding: 4px 12px; border-radius: 99px; border: 1.5px solid;
     }
     .tier-entry        { color: #C3CEDA; border-color: rgba(195,206,218,0.40); background: rgba(195,206,218,0.10); }
-    .tier-growth       { color: #7DB4FF; border-color: rgba(125,180,255,0.40); background: rgba(96,165,250,0.10);  }
+    .tier-growth       { color: #7DA6FF; border-color: rgba(125,166,255,0.40); background: rgba(47,111,237,0.12);  }
     .tier-professional { color: #C4A8FF; border-color: rgba(196,168,255,0.40); background: rgba(167,139,250,0.10); }
     .tier-elite        { color: #F0C355; border-color: rgba(240,195,85,0.45);  background: rgba(212,175,55,0.10); }
 
@@ -120,48 +121,48 @@
       flex: 1;
       background: rgba(255,255,255,0.035);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 13px;
-      padding: 13px 16px;
+      border-radius: 11px;
+      padding: 11px 14px;
     }
 
     /* ── Insight card ── */
     .insight-card {
       flex: 1;
-      background: linear-gradient(160deg, rgba(0,229,172,0.055), rgba(0,229,172,0.015));
-      border: 1px solid rgba(0,229,172,0.16);
-      border-radius: 15px;
-      padding: 16px 18px;
+      background: linear-gradient(160deg, rgba(20,201,180,0.06), rgba(20,201,180,0.015));
+      border: 1px solid rgba(20,201,180,0.18);
+      border-radius: 13px;
+      padding: 13px 15px;
     }
     .insight-card-blue {
-      background: linear-gradient(160deg, rgba(96,165,250,0.055), rgba(96,165,250,0.015));
-      border: 1px solid rgba(96,165,250,0.16);
+      background: linear-gradient(160deg, rgba(47,111,237,0.07), rgba(47,111,237,0.015));
+      border: 1px solid rgba(47,111,237,0.20);
     }
 
     /* ── Tier track ── */
     .tier-track {
-      height: 5px;
+      height: 4px;
       background: rgba(255,255,255,0.08);
       border-radius: 99px; overflow: hidden;
     }
 
     /* ── Preset buttons ── */
     .preset-btn {
-      font-size: 12px; font-family: "JetBrains Mono", monospace; font-weight: 650;
-      padding: 6px 12px; border-radius: 8px;
+      font-size: 11px; font-family: "JetBrains Mono", monospace; font-weight: 650;
+      padding: 5px 10px; border-radius: 7px;
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.05);
       color: #9BB0C6; cursor: pointer; transition: all 0.15s;
       white-space: nowrap;
     }
     .preset-btn:hover { color: #FFFFFF; border-color: rgba(255,255,255,0.22); }
-    .preset-btn.active { background: rgba(0,229,172,0.16); border-color: rgba(0,229,172,0.50); color: var(--teal); }
+    .preset-btn.active { background: rgba(20,201,180,0.18); border-color: rgba(20,201,180,0.55); color: var(--teal); }
 
     /* ── Instrument card ── */
     .inst-card {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 15px;
-      padding: 16px 18px;
+      border-radius: 13px;
+      padding: 13px 15px;
       transition: border-color 0.2s;
     }
     .inst-card:hover { border-color: rgba(255,255,255,0.18); }
@@ -173,13 +174,13 @@
       border-left: none; border-right: none;
       color: #FFFFFF;
       font-family: "JetBrains Mono", monospace;
-      font-size: 19px; font-weight: 750;
-      padding: 9px 0;
-      width: 72px; text-align: center;
+      font-size: 17px; font-weight: 750;
+      padding: 7px 0;
+      width: 64px; text-align: center;
       outline: none;
     }
-    .lot-input-lg { font-size: 38px; width: 120px; padding: 11px 0; font-weight: 800; }
-    .lot-input:focus { background: rgba(0,229,172,0.09); }
+    .lot-input-lg { font-size: 32px; width: 104px; padding: 9px 0; font-weight: 800; }
+    .lot-input:focus { background: rgba(20,201,180,0.10); }
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
@@ -187,23 +188,23 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.14);
       color: #9BB0C6;
-      padding: 0 15px;
+      padding: 0 12px;
       cursor: pointer; transition: all 0.15s;
       display: flex; align-items: center; justify-content: center;
     }
-    .stepper-lg { padding: 0 20px; }
-    .stepper-l { border-radius: 10px 0 0 10px; }
-    .stepper-r { border-radius: 0 10px 10px 0; }
-    .stepper-btn:hover { background: rgba(0,229,172,0.14); color: #00E5AC; border-color: rgba(0,229,172,0.40); }
-    .stepper-btn:active { background: rgba(0,229,172,0.22); }
+    .stepper-lg { padding: 0 16px; }
+    .stepper-l { border-radius: 9px 0 0 9px; }
+    .stepper-r { border-radius: 0 9px 9px 0; }
+    .stepper-btn:hover { background: rgba(20,201,180,0.15); color: #14C9B4; border-color: rgba(20,201,180,0.45); }
+    .stepper-btn:active { background: rgba(20,201,180,0.24); }
 
     /* ── Remove button ── */
     .remove-btn {
       display: flex; align-items: center; justify-content: center;
-      width: 28px; height: 28px;
+      width: 24px; height: 24px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 9px;
+      border-radius: 8px;
       color: #9BB0C6; cursor: pointer; transition: all 0.15s;
     }
     .remove-btn:hover { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.45); color: #FCA5A5; }
@@ -212,66 +213,66 @@
     .add-inst-btn {
       display: flex; align-items: center;
       width: 100%;
-      background: rgba(0,229,172,0.06);
-      border: 1.5px dashed rgba(0,229,172,0.38);
-      border-radius: 14px;
-      padding: 15px 18px;
-      color: #00E5AC; cursor: pointer;
-      font-size: 13px; font-weight: 700;
+      background: rgba(20,201,180,0.07);
+      border: 1.5px dashed rgba(20,201,180,0.40);
+      border-radius: 12px;
+      padding: 12px 15px;
+      color: #14C9B4; cursor: pointer;
+      font-size: 12px; font-weight: 700;
       transition: all 0.18s;
-      gap: 10px; font-family: inherit;
+      gap: 9px; font-family: inherit;
     }
     .add-inst-btn:hover {
-      background: rgba(0,229,172,0.11);
-      border-color: rgba(0,229,172,0.65);
+      background: rgba(20,201,180,0.12);
+      border-color: rgba(20,201,180,0.68);
     }
 
     /* ── Instrument / account picker ── */
     .inst-picker {
-      background: rgba(5,16,27,0.98);
+      background: rgba(6,17,29,0.98);
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 15px;
-      padding: 16px 18px;
-      margin-top: 10px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+      border-radius: 13px;
+      padding: 13px 15px;
+      margin-top: 9px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.45);
     }
     .search-wrap {
-      display: flex; align-items: center; gap: 9px;
+      display: flex; align-items: center; gap: 8px;
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 11px;
-      padding: 9px 13px;
-      margin-bottom: 14px;
+      border-radius: 10px;
+      padding: 8px 11px;
+      margin-bottom: 12px;
     }
     .search-input {
       flex: 1;
       background: transparent; border: none; outline: none;
-      color: #FFFFFF; font-size: 13px; font-family: inherit;
+      color: #FFFFFF; font-size: 12px; font-family: inherit;
     }
     .search-input::placeholder { color: #5E7A93; }
 
     .picker-row {
-      display: flex; align-items: center; gap: 10px;
+      display: flex; align-items: center; gap: 9px;
       width: 100%;
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 10px;
-      padding: 11px 13px;
+      border-radius: 9px;
+      padding: 9px 11px;
       cursor: pointer; transition: all 0.15s;
       font-family: inherit;
     }
     .picker-row:hover {
-      background: rgba(0,229,172,0.09);
-      border-color: rgba(0,229,172,0.35);
+      background: rgba(20,201,180,0.10);
+      border-color: rgba(20,201,180,0.40);
     }
     .picker-row-active {
-      background: rgba(0,229,172,0.10);
-      border-color: rgba(0,229,172,0.45);
+      background: rgba(20,201,180,0.11);
+      border-color: rgba(20,201,180,0.50);
     }
     .add-chip {
-      font-size: 11px; font-weight: 700; color: #00E5AC;
-      background: rgba(0,229,172,0.14);
-      padding: 4px 10px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; color: #14C9B4;
+      background: rgba(20,201,180,0.15);
+      padding: 4px 9px; border-radius: 99px;
       margin-left: 8px; white-space: nowrap;
     }
   </style>

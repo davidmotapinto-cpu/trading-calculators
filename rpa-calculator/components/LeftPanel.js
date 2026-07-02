@@ -107,8 +107,8 @@ export function LeftPanel({
   });
 
   return html`
-    <aside style=${{ width: "440px", minWidth: "440px", borderRight: "1px solid rgba(255,255,255,0.08)", overflowY: "auto", display: "flex", flexDirection: "column" }}>
-      <div style=${{ padding: "28px 26px", display: "flex", flexDirection: "column", gap: "28px" }}>
+    <aside style=${{ width: "380px", minWidth: "380px", borderRight: "1px solid rgba(255,255,255,0.08)", overflowY: "auto", display: "flex", flexDirection: "column" }}>
+      <div style=${{ padding: "22px 20px", display: "flex", flexDirection: "column", gap: "22px" }}>
 
         <!-- ── Account Type ── -->
         <section>
@@ -119,7 +119,7 @@ export function LeftPanel({
               <span style=${{ fontSize: "16px", fontWeight: "700", color: "#FFFFFF" }}>${currentAcct.label}</span>
               <span style=${{ fontSize: "12px", color: "#9BB0C6" }}>${currentAcct.desc}</span>
             </div>
-            <span style=${{ marginLeft: "auto", color: "#00E5AC", display: "flex", alignItems: "center", gap: "7px" }}>
+            <span style=${{ marginLeft: "auto", color: "#14C9B4", display: "flex", alignItems: "center", gap: "7px" }}>
               <span class="inst-count-chip">${eligibleCount(accountType)} instruments</span>
               <${ChevronIcon} open=${showAcctPicker} />
             </span>
@@ -135,7 +135,7 @@ export function LeftPanel({
                       <button key=${a.key} class=${"picker-row" + (a.key === accountType ? " picker-row-active" : "")}
                         onClick=${() => { onAccountType(a.key); setShowAcctPicker(false); }}>
                         <div style=${{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "3px", flex: "1" }}>
-                          <span style=${{ fontSize: "13px", fontWeight: "600", color: a.key === accountType ? "#00E5AC" : "#E4ECF5" }}>${a.label}</span>
+                          <span style=${{ fontSize: "13px", fontWeight: "600", color: a.key === accountType ? "#14C9B4" : "#E4ECF5" }}>${a.label}</span>
                           <span style=${{ fontSize: "11px", color: "#8DA3BA" }}>${a.desc}</span>
                         </div>
                         <span class="add-chip">${eligibleCount(a.key)} inst.</span>
@@ -169,7 +169,7 @@ export function LeftPanel({
         </section>
 
         <!-- ── Divider ── -->
-        <div style=${{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 -26px" }}></div>
+        <div style=${{ height: "1px", background: "rgba(255,255,255,0.08)", margin: "0 -20px" }}></div>
 
         <!-- ── Instrument Configuration ── -->
         <section>
@@ -209,7 +209,7 @@ export function LeftPanel({
               <button class="add-inst-btn" onClick=${() => setShowPicker(!showPicker)}>
                 <span style=${{ display: "flex", alignItems: "center", justifyContent: "center", width: "16px", height: "16px" }}><${PlusIcon} /></span>
                 Add Instrument
-                <span style=${{ marginLeft: "auto", color: "#00E5AC" }}><${ChevronIcon} open=${showPicker} /></span>
+                <span style=${{ marginLeft: "auto", color: "#14C9B4" }}><${ChevronIcon} open=${showPicker} /></span>
               </button>
 
               ${showPicker ? html`

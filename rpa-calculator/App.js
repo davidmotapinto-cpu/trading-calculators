@@ -150,19 +150,19 @@ export function App() {
   return html`
     <div style=${{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-      <header style=${{ borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "22px 48px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <div style=${{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <div style=${{ width: "50px", height: "50px", borderRadius: "14px", background: "linear-gradient(135deg, #00E5AC, #0EA5E9)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 24px rgba(0,200,150,0.35)" }}>
-            <span style=${{ color: "#fff", fontSize: "26px", fontWeight: "900" }}>E</span>
+      <header style=${{ borderBottom: "1px solid rgba(255,255,255,0.08)", padding: "16px 36px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+        <div style=${{ display: "flex", alignItems: "center", gap: "15px" }}>
+          <div style=${{ width: "38px", height: "38px", borderRadius: "11px", background: "linear-gradient(135deg, #14C9B4, #2F6FED)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 0 18px rgba(20,201,180,0.35)" }}>
+            <span style=${{ color: "#fff", fontSize: "19px", fontWeight: "900" }}>E</span>
           </div>
           <div>
-            <div style=${{ fontSize: "24px", fontWeight: "750", color: "#FFFFFF", letterSpacing: "-0.02em" }}>Partner Earnings Simulator</div>
-            <div style=${{ fontSize: "13px", color: "#7C93AB", letterSpacing: "0.12em", fontWeight: "700" }}>EQUITI IB PORTAL</div>
+            <div style=${{ fontSize: "18px", fontWeight: "750", color: "#FFFFFF", letterSpacing: "-0.02em" }}>Partner Earnings Simulator</div>
+            <div style=${{ fontSize: "10px", color: "#7C93AB", letterSpacing: "0.12em", fontWeight: "700" }}>EQUITI IB PORTAL</div>
           </div>
         </div>
-        <div style=${{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style=${{ width: "10px", height: "10px", borderRadius: "50%", background: "#00E5AC", boxShadow: "0 0 14px #00E5AC" }}></div>
-          <span style=${{ fontSize: "14px", color: "#7C93AB", fontFamily: '"JetBrains Mono", monospace', letterSpacing: "0.12em", fontWeight: "600" }}>LIVE</span>
+        <div style=${{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style=${{ width: "8px", height: "8px", borderRadius: "50%", background: "#14C9B4", boxShadow: "0 0 12px #14C9B4" }}></div>
+          <span style=${{ fontSize: "11px", color: "#7C93AB", fontFamily: '"JetBrains Mono", monospace', letterSpacing: "0.12em", fontWeight: "600" }}>LIVE</span>
         </div>
       </header>
 

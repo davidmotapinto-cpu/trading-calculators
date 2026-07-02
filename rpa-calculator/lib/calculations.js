@@ -9,10 +9,10 @@ export const PARAMS = {
 
 // ── Tier table ───────────────────────────────────────────────────────────────
 export const TIERS = [
-  { name: "Entry",        min: 1,  max: 10,       multiplier: 1.00, color: "#6B7280" },
-  { name: "Growth",       min: 11, max: 25,       multiplier: 1.15, color: "#60A5FA" },
-  { name: "Professional", min: 26, max: 50,       multiplier: 1.30, color: "#A78BFA" },
-  { name: "Elite",        min: 51, max: Infinity,  multiplier: 1.50, color: "#D4AF37" },
+  { name: "Entry",        min: 1,  max: 10,       multiplier: 1.00, color: "#C3CEDA" },
+  { name: "Growth",       min: 11, max: 25,       multiplier: 1.15, color: "#7DA6FF" },
+  { name: "Professional", min: 26, max: 50,       multiplier: 1.30, color: "#C4A8FF" },
+  { name: "Elite",        min: 51, max: Infinity,  multiplier: 1.50, color: "#F0C355" },
 ];
 
 export function getTier(clients) {
